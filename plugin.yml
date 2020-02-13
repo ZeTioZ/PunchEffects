@@ -1,0 +1,10 @@
+name: PunchEffects
+version: 0.5.1
+author: ZeTioZ
+main: fr.zetioz.puncheffects.Main
+website: https://opsycraft.fr/
+softdepend: [WorldGuard]
+commands:
+  puncheffects:
+    aliases: [pe, zpe]
+    description: Punch Effects main command

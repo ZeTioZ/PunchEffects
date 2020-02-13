@@ -1,0 +1,13 @@
+prefix: "&c[&aPunch&6Effects&c] &r"
+
+plugin-reload:
+  - "&2Plugin reloaded!"
+  
+help-page:
+  - "/puncheffects » Display this help page"
+  - "/puncheffects help » Diplay this help page"
+  - "/puncheffects reload » Reload the plugin"
+  
+errors:
+  not-enought-permissions:
+    - "&cSorry, but you don't have enought permissions to do that!"
