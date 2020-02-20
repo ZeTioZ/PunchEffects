@@ -84,11 +84,12 @@ public class FilesManager
     		boolean damagerEffect = configsFileConfig.getBoolean("punch_effects." + effectName + ".damager_effect");
     		boolean victimEffect = configsFileConfig.getBoolean("punch_effects." + effectName + ".victim_effect");
     		boolean worldGuardCheck = configsFileConfig.getBoolean("punch_effects." + effectName + ".worldguard_check");
+    		boolean usePermission = configsFileConfig.getBoolean("punch_effects." + effectName + ".use_permission");
     		int effectDuration = configsFileConfig.getInt("punch_effects." + effectName + ".duration");
     		int effectLevel = configsFileConfig.getInt("punch_effects." + effectName + ".level") - 1;
     		int effectCooldown = configsFileConfig.getInt("punch_effects." + effectName + ".cooldown");
     		int triggerChances = configsFileConfig.getInt("punch_effects." + effectName + ".trigger_chances");
-    		effectsMap.put(effectName, new PunchEffect(effectPerm, effectType, holdingItem, mobEffect, damagerEffect, victimEffect, worldGuardCheck, effectDuration, effectLevel, effectCooldown, triggerChances));
+    		effectsMap.put(effectName, new PunchEffect(effectPerm, effectType, holdingItem, mobEffect, damagerEffect, victimEffect, worldGuardCheck, usePermission, effectDuration, effectLevel, effectCooldown, triggerChances));
     	}
     	return effectsMap;
     }
