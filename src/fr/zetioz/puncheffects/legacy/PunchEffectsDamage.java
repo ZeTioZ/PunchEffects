@@ -28,7 +28,7 @@ public class PunchEffectsDamage implements Listener{
 	private WorldGuardHook wgh;
 	private Map<UUID, Map<String, Long>> cooldownMap;
 	private Random rand = new SecureRandom();
-	private YamlConfiguration configsFileConfig;
+	private YamlConfiguration configsFile;
 	
 	public PunchEffectsDamage(Main main)
 	{
@@ -36,12 +36,17 @@ public class PunchEffectsDamage implements Listener{
 		this.effectsMap = new HashMap<>();
 		this.cooldownMap = new HashMap<>();
 		this.wgh = this.main.getWorldGuardEnabled() ? new WorldGuardHook() : null;
-		this.configsFileConfig = main.getFilesManager().getConfigsFile();
+		this.configsFile = main.getFilesManager().getConfigsFile();
 	}
 	
 	public void setEffectsMap(Map<String, PunchEffect> effectsMap)
 	{
 		this.effectsMap = effectsMap;
+	}
+	
+	public Map<String, PunchEffect> getEffectsMap()
+	{
+		return this.effectsMap;
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -58,13 +63,13 @@ public class PunchEffectsDamage implements Listener{
 			LivingEntity victim = (LivingEntity) e.getEntity();
 			for(Entry<String, PunchEffect> permissionEffect :  effectsMap.entrySet())
 			{
-				if(damager.hasPermission(permissionEffect.getValue().getEffectPermission()))
+				if(damager.hasPermission(permissionEffect.getValue().getEffectPermission()) || !permissionEffect.getValue().getUsePermission())
 				{
 					PunchEffect pe = permissionEffect.getValue();
-					String itemType = configsFileConfig.getString("punch_effects." + permissionEffect.getKey() + ".holding_item.material");
-					String itemName = pe.getHoldingItem().getType() != Material.AIR && pe.getHoldingItem().getItemMeta().getDisplayName() != null ? pe.getHoldingItem().getItemMeta().getDisplayName() : itemType.equalsIgnoreCase("PROJECTILE") ? configsFileConfig.getString("punch_effects." + permissionEffect.getKey() + ".holding_item.display_name") : "none";
-					List<String> itemLore = pe.getHoldingItem().getType() != Material.AIR && pe.getHoldingItem().getItemMeta().getLore() != null ? pe.getHoldingItem().getItemMeta().getLore() : itemType.equalsIgnoreCase("PROJECTILE") ? configsFileConfig.getStringList("punch_effects." + permissionEffect.getKey() + ".holding_item.lore") : new ArrayList<>();
-					boolean onlyArrow = configsFileConfig.getBoolean("punch_effects." + permissionEffect.getKey() + ".holding_item.only_arrow");
+					String itemType = configsFile.getString("punch_effects." + permissionEffect.getKey() + ".holding_item.material");
+					String itemName = pe.getHoldingItem().getType() != Material.AIR && pe.getHoldingItem().getItemMeta().getDisplayName() != null ? pe.getHoldingItem().getItemMeta().getDisplayName() : itemType.equalsIgnoreCase("PROJECTILE") ? configsFile.getString("punch_effects." + permissionEffect.getKey() + ".holding_item.display_name") : "none";
+					List<String> itemLore = pe.getHoldingItem().getType() != Material.AIR && pe.getHoldingItem().getItemMeta().getLore() != null ? pe.getHoldingItem().getItemMeta().getLore() : itemType.equalsIgnoreCase("PROJECTILE") ? configsFile.getStringList("punch_effects." + permissionEffect.getKey() + ".holding_item.lore") : new ArrayList<>();
+					boolean onlyArrow = configsFile.getBoolean("punch_effects." + permissionEffect.getKey() + ".holding_item.only_arrow");
 					
 					String damagerItemName = damager.getItemInHand().getType() != Material.AIR && damager.getItemInHand().getItemMeta().getDisplayName() != null ? damager.getItemInHand().getItemMeta().getDisplayName() : "none";
 					List<String> damagerItemLore = damager.getItemInHand().getType() != Material.AIR && damager.getItemInHand().getItemMeta().getLore() != null ? damager.getItemInHand().getItemMeta().getLore() : new ArrayList<>();

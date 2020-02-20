@@ -11,6 +11,7 @@ public class PunchEffect
 	private boolean damagerEffect;
 	private boolean victimEffect;
 	private boolean worldGuardCheck;
+	private boolean usePermission;
 	private int effectDuration;
 	private int effectLevel;
 	private int effectCooldown;
@@ -22,7 +23,8 @@ public class PunchEffect
 			           boolean mobEffect,
 			           boolean damagerEffect,
 			           boolean playerEffect,
-			           boolean worldGuardCheck, 
+			           boolean worldGuardCheck,
+			           boolean usePermission,
 			           int effectDuration,
 			           int effectLevel,
 			           int effectCooldown,
@@ -35,6 +37,7 @@ public class PunchEffect
 		this.damagerEffect = damagerEffect;
 		this.victimEffect = playerEffect;
 		this.worldGuardCheck = worldGuardCheck;
+		this.usePermission = usePermission;
 		this.effectDuration = effectDuration;
 		this.effectLevel = effectLevel;
 		this.effectCooldown = effectCooldown;
@@ -75,6 +78,11 @@ public class PunchEffect
 	public boolean getWorldGuardCheck()
 	{
 		return this.worldGuardCheck;
+	}
+	
+	public boolean getUsePermission()
+	{
+		return this.usePermission;
 	}
 	
 	public int getEffectDuration()
