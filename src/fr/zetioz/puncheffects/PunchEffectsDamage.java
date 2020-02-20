@@ -71,8 +71,8 @@ public class PunchEffectsDamage implements Listener{
 					List<String> itemLore = pe.getHoldingItem().getType() != Material.AIR && pe.getHoldingItem().getItemMeta().getLore() != null ? pe.getHoldingItem().getItemMeta().getLore() : itemType.equalsIgnoreCase("PROJECTILE") ? configsFile.getStringList("punch_effects." + permissionEffect.getKey() + ".holding_item.lore") : new ArrayList<>();
 					boolean onlyArrow = configsFile.getBoolean("punch_effects." + permissionEffect.getKey() + ".holding_item.only_arrow");
 					
-					String damagerItemName = damager.getItemInHand().getType() != Material.AIR && damager.getItemInHand().getItemMeta().getDisplayName() != null ? damager.getItemInHand().getItemMeta().getDisplayName() : "none";
-					List<String> damagerItemLore = damager.getItemInHand().getType() != Material.AIR && damager.getItemInHand().getItemMeta().getLore() != null ? damager.getItemInHand().getItemMeta().getLore() : new ArrayList<>();
+					String damagerItemName = damager.getInventory().getItemInMainHand().getType() != Material.AIR && damager.getInventory().getItemInMainHand().getItemMeta().getDisplayName() != null ? damager.getInventory().getItemInMainHand().getItemMeta().getDisplayName() : "none";
+					List<String> damagerItemLore = damager.getInventory().getItemInMainHand().getType() != Material.AIR && damager.getInventory().getItemInMainHand().getItemMeta().getLore() != null ? damager.getInventory().getItemInMainHand().getItemMeta().getLore() : new ArrayList<>();
 					
 					// WorldGuard Check
 					if(((wgh != null
@@ -83,13 +83,13 @@ public class PunchEffectsDamage implements Listener{
 						// Item check
 						// Set item check
 						&& ((pe.getHoldingItem().getType() != Material.AIR
-							&& pe.getHoldingItem().getType() == damager.getItemInHand().getType()
+							&& pe.getHoldingItem().getType() == damager.getInventory().getItemInMainHand().getType()
 							&& itemName.equals(damagerItemName)
 							&& itemLore.equals(damagerItemLore))
 						// No item only hand check
 						|| (pe.getHoldingItem().getType() == Material.AIR
 							&& itemType.equalsIgnoreCase("HAND")
-							&& damager.getItemInHand().getType() == Material.AIR)
+							&& damager.getInventory().getItemInMainHand().getType() == Material.AIR)
 						// Any item
 						|| (pe.getHoldingItem().getType() == Material.AIR
 							&& !itemType.equalsIgnoreCase("HAND")
