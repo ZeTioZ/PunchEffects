@@ -5,6 +5,7 @@
 #=---------------------------------=#
 # punch_effects:                    #
 #   effectname1:                    #
+#     use_permission: true          #
 #     permission: permission1       #
 #     effect: "SMITE"               #
 #     holding_item:                 #
@@ -26,6 +27,7 @@
 
 punch_effects:
   smite:
+    use_permission: true
     permission: peffects.smite
     effect: "SMITE"
     holding_item:
@@ -43,6 +45,7 @@ punch_effects:
     cooldown: 15
     trigger_chances: 100
   heal:
+    use_permission: true
     permission: peffects.heal
     effect: "REGENERATION"
     holding_item:

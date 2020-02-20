@@ -4,10 +4,19 @@ plugin-reload:
   - "&2Plugin reloaded!"
   
 help-page:
-  - "/puncheffects Â» Display this help page"
-  - "/puncheffects help Â» Diplay this help page"
-  - "/puncheffects reload Â» Reload the plugin"
+  - "/puncheffects » Display this help page"
+  - "/puncheffects give <effect> » Give the custom effect item"
+  - "/puncheffects help » Diplay this help page"
+  - "/puncheffects reload » Reload the plugin"
   
 errors:
+  unknown-effect:
+    - "&cThe effect &d{effect} &cdoesn't exist in the configs!"
+  no-item-give:
+    - "&cThere is no item to give with the typed effect name!"
+  no-item-inputted:
+    - "&cPlease, input an effect to get the custom item from it!"
   not-enought-permissions:
     - "&cSorry, but you don't have enought permissions to do that!"
+  must-be-player:
+    - "&cYou must a player to execute this command!"
