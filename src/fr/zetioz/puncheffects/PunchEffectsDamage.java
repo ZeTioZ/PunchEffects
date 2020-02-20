@@ -50,7 +50,6 @@ public class PunchEffectsDamage implements Listener{
 		return this.effectsMap;
 	}
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerPunch(EntityDamageByEntityEvent e)
 	{
