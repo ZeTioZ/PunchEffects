@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -175,11 +176,11 @@ public class PunchEffectsDamage implements Listener{
 						{
 							if(pe.getDamagerEffect())
 							{
-								damager.setHealth(damager.getHealth() + e.getDamage() > damager.getMaxHealth() ? 20.0 : damager.getHealth() + e.getDamage());
+								damager.setHealth(damager.getHealth() + e.getDamage() > damager.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() ? damager.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() : damager.getHealth() + e.getDamage());
 							}
 							if((!(victim instanceof Player) && pe.getMobEffect()) || (victim instanceof Player && pe.getVictimEffect()))
 							{
-								victim.setHealth(victim.getHealth() + e.getDamage() > victim.getMaxHealth() ? 20.0 : victim.getHealth() + e.getDamage());
+								victim.setHealth(victim.getHealth() + e.getDamage() > victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() ? victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() : victim.getHealth() + e.getDamage());
 							}
 						}
 						else
