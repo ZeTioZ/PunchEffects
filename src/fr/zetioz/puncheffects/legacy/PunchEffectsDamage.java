@@ -182,6 +182,17 @@ public class PunchEffectsDamage implements Listener{
 								victim.setHealth(victim.getHealth() + e.getDamage() > victim.getMaxHealth() ? 20.0 : victim.getHealth() + e.getDamage());
 							}
 						}
+						else if(pe.getEffectType().equalsIgnoreCase("STEAL"))
+						{
+							if(victim instanceof Player && pe.getVictimEffect())
+							{
+								damager.addPotionEffects(victim.getActivePotionEffects());
+								for(PotionEffect potion : victim.getActivePotionEffects())
+								{
+									victim.removePotionEffect(potion.getType());
+								}
+							}
+						}
 						else
 						{
 							cooldownMap.get(damager.getUniqueId()).remove(permissionEffect.getKey());
