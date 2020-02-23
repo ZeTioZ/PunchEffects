@@ -1,7 +1,7 @@
 name: PunchEffects
 version: 0.7.0
 author: ZeTioZ
-main: fr.zetioz.puncheffects.legacy.Main
+main: fr.zetioz.puncheffects.Main
 website: https://opsycraft.fr/
 softdepend: [WorldGuard]
 commands:
