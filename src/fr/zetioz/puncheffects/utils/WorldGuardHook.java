@@ -1,4 +1,4 @@
-package fr.zetioz.puncheffects;
+package fr.zetioz.puncheffects.utils;
 
 import java.util.Map;
 import java.util.Map.Entry;

@@ -22,6 +22,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import fr.zetioz.puncheffects.objects.PunchEffect;
+import fr.zetioz.puncheffects.utils.WorldGuardHook;
+
 public class PunchEffectsDamage implements Listener{
 
 	private Main main;
@@ -30,6 +33,7 @@ public class PunchEffectsDamage implements Listener{
 	private Map<UUID, Map<String, Long>> cooldownMap;
 	private Random rand = new SecureRandom();
 	private YamlConfiguration configsFile;
+	private Map<String, Map<String, Long>> playersTempsEffect;
 	
 	public PunchEffectsDamage(Main main)
 	{
@@ -38,6 +42,17 @@ public class PunchEffectsDamage implements Listener{
 		this.cooldownMap = new HashMap<>();
 		this.wgh = this.main.getWorldGuardEnabled() ? new WorldGuardHook() : null;
 		this.configsFile = main.getFilesManager().getConfigsFile();
+		this.playersTempsEffect = new HashMap<>();
+	}
+	
+	public Map<String, Map<String, Long>> getPlayersTempsEffect()
+	{
+		return this.playersTempsEffect;
+	}
+	
+	public void setPlayersTempsEffect(Map<String, Map<String, Long>> playersTempsEffect)
+	{
+		this.playersTempsEffect = playersTempsEffect;
 	}
 	
 	public void setEffectsMap(Map<String, PunchEffect> effectsMap)
@@ -63,7 +78,23 @@ public class PunchEffectsDamage implements Listener{
 			LivingEntity victim = (LivingEntity) e.getEntity();
 			for(Entry<String, PunchEffect> permissionEffect :  effectsMap.entrySet())
 			{
-				if(damager.hasPermission(permissionEffect.getValue().getEffectPermission()) || !permissionEffect.getValue().getUsePermission())
+				if(playersTempsEffect.containsKey(damager.getUniqueId().toString())
+						&& playersTempsEffect.get(damager.getUniqueId().toString()).containsKey(permissionEffect.getKey())
+						&& playersTempsEffect.get(damager.getUniqueId().toString()).get(permissionEffect.getKey()) <= System.currentTimeMillis())
+				{
+					playersTempsEffect.get(damager.getUniqueId().toString()).remove(permissionEffect.getKey());
+					if(playersTempsEffect.get(damager.getUniqueId().toString()).isEmpty())
+					{
+						playersTempsEffect.remove(damager.getUniqueId().toString());
+					}
+					main.getPEC().setPlayersTempsEffect(playersTempsEffect);
+					main.getFilesManager().saveDatabase();
+				}
+				if(damager.hasPermission(permissionEffect.getValue().getEffectPermission())
+						|| !permissionEffect.getValue().getUsePermission()
+						|| (playersTempsEffect.containsKey(damager.getUniqueId().toString())
+								&& playersTempsEffect.get(damager.getUniqueId().toString()).containsKey(permissionEffect.getKey())
+								&& playersTempsEffect.get(damager.getUniqueId().toString()).get(permissionEffect.getKey()) > System.currentTimeMillis()))
 				{
 					PunchEffect pe = permissionEffect.getValue();
 					String itemType = configsFile.getString("punch_effects." + permissionEffect.getKey() + ".holding_item.material");

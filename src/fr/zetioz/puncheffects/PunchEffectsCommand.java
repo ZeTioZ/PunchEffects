@@ -1,5 +1,6 @@
 package fr.zetioz.puncheffects;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -14,6 +15,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import fr.zetioz.puncheffects.utils.TimeConverter;
+import fr.zetioz.puncheffects.objects.PunchEffect;
+
 
 public class PunchEffectsCommand implements CommandExecutor, Listener
 {
@@ -22,6 +26,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 	private YamlConfiguration messagesFile;
 	private YamlConfiguration configsFile;
 	private String prefix;
+	private Map<String, Map<String, Long>> playersTempsEffect;
 	
 	public PunchEffectsCommand(Main main)
 	{
@@ -29,8 +34,20 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 		this.messagesFile = this.main.getFilesManager().getMessagesFile();
 		this.configsFile = this.main.getFilesManager().getConfigsFile();
 		this.prefix = ChatColor.translateAlternateColorCodes('&', messagesFile.getString("prefix"));
+		this.playersTempsEffect = new HashMap<>();
 	}
 	
+	public Map<String, Map<String, Long>> getPlayersTempsEffect()
+	{
+		return this.playersTempsEffect;
+	}
+	
+	public void setPlayersTempsEffect(Map<String, Map<String, Long>> playersTempsEffect)
+	{
+		this.playersTempsEffect = playersTempsEffect;
+	}
+	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String msg, String[] args) {
 		if(cmd.getName().equalsIgnoreCase("puncheffects"))
@@ -41,9 +58,9 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 			}
 			else if(args.length == 1)
 			{
-				if(args[0].equalsIgnoreCase("give"))
+				if(args[0].equalsIgnoreCase("giveitem") || args[0].equalsIgnoreCase("gi"))
 				{
-					for(String line : messagesFile.getStringList("errors.no-item-inputted"))
+					for(String line : messagesFile.getStringList("errors.no-item-input"))
 					{
 						line = ChatColor.translateAlternateColorCodes('&', line);
 						sender.sendMessage(prefix + line);
@@ -67,7 +84,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 					}
 					else
 					{
-						for(String line : messagesFile.getStringList("errors.not-enought-permissions"))
+						for(String line : messagesFile.getStringList("errors.not-enough-permissions"))
 						{
 							line = ChatColor.translateAlternateColorCodes('&', line);
 							sender.sendMessage(prefix + line);
@@ -81,11 +98,11 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 			}
 			else if(args.length == 2)
 			{
-				if(args[0].equalsIgnoreCase("give"))
+				if(args[0].equalsIgnoreCase("giveitem") || args[0].equalsIgnoreCase("gi"))
 				{
 					if(sender instanceof Player)
 					{				
-						if(sender.hasPermission("puncheffects.reload"))
+						if(sender.hasPermission("puncheffects.giveitem"))
 						{						
 							Map<String, PunchEffect> pe = main.getPED().getEffectsMap();
 							if(pe.keySet().contains(args[1]))
@@ -107,6 +124,13 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 									}
 									Player p = (Player) sender;
 									p.getInventory().addItem(itemToGive);
+									for(String line : messagesFile.getStringList("weapon-given"))
+									{
+										line = line.replace("{effect}", args[1]);
+										line = ChatColor.translateAlternateColorCodes('&', line);
+										sender.sendMessage(prefix + line);
+									}
+									
 								}
 								else
 								{
@@ -129,7 +153,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 						}
 						else
 						{
-							for(String line : messagesFile.getStringList("errors.not-enought-permissions"))
+							for(String line : messagesFile.getStringList("errors.not-enough-permissions"))
 							{
 								line = ChatColor.translateAlternateColorCodes('&', line);
 								sender.sendMessage(prefix + line);
@@ -148,6 +172,122 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 				else
 				{
 					sendHelpPage(sender);
+				}
+			}
+			else if(args.length == 3)
+			{
+				if(args[0].equalsIgnoreCase("removetempeffect") || args[0].equalsIgnoreCase("rte"))
+				{
+					if(sender.hasPermission("puncheffects.removetempeffect"))
+					{						
+						String effectName = args[2];
+						String playerUUID = main.getServer().getOfflinePlayer(args[1]).getUniqueId().toString();
+						if(playersTempsEffect.containsKey(playerUUID))
+						{
+							if(playersTempsEffect.get(playerUUID).containsKey(effectName))
+							{
+								playersTempsEffect.get(playerUUID).remove(effectName);
+								if(playersTempsEffect.get(playerUUID).isEmpty())
+								{
+									playersTempsEffect.remove(playerUUID);
+								}
+								main.getPED().setPlayersTempsEffect(playersTempsEffect);
+								main.getFilesManager().saveDatabase();
+								for(String line : messagesFile.getStringList("timed-effect-revoked"))
+								{
+									line = line.replace("{player}", args[1]);
+									line = line.replace("{effect}", args[2]);
+									line = ChatColor.translateAlternateColorCodes('&', line);
+									sender.sendMessage(prefix + line);
+								}
+							}
+							else
+							{								
+								for(String line : messagesFile.getStringList("errors.effect-not-listed"))
+								{
+									line = line.replace("{player}", args[1]);
+									line = line.replace("{effect}", effectName);
+									line = ChatColor.translateAlternateColorCodes('&', line);
+									sender.sendMessage(prefix + line);
+								}
+							}
+						}
+						else
+						{							
+							for(String line : messagesFile.getStringList("errors.player-empty-effects-list"))
+							{
+								line = line.replace("{player}", args[1]);
+								line = ChatColor.translateAlternateColorCodes('&', line);
+								sender.sendMessage(prefix + line);
+							}
+						}
+					}
+					else
+					{
+						for(String line : messagesFile.getStringList("errors.not-enough-permissions"))
+						{
+							line = ChatColor.translateAlternateColorCodes('&', line);
+							sender.sendMessage(prefix + line);
+						}
+					}
+				}
+			}
+			else if(args.length == 4)
+			{
+				if(args[0].equalsIgnoreCase("givetempeffect") || args[0].equalsIgnoreCase("gte"))
+				{
+					if(sender.hasPermission("puncheffects.givetempeffect"))
+					{						
+						String effectName = args[2];
+						if(main.getPED().getEffectsMap().containsKey(effectName))
+						{							
+							long endTimeEffect = System.currentTimeMillis() + TimeConverter.stringTimeToMillis(args[3]);
+							String playerUUID = main.getServer().getOfflinePlayer(args[1]).getUniqueId().toString();
+							if(!playersTempsEffect.containsKey(playerUUID))
+							{
+								playersTempsEffect.put(playerUUID, new HashMap<>());
+							}
+							playersTempsEffect.get(playerUUID).put(effectName, endTimeEffect);
+							main.getPED().setPlayersTempsEffect(playersTempsEffect);
+							main.getFilesManager().saveDatabase();
+							for(String line : messagesFile.getStringList("timed-effect-given"))
+							{
+								line = line.replace("{receiver}", args[1]);
+								line = line.replace("{effect}", args[2]);
+								line = line.replace("{time}", args[3]);
+								line = ChatColor.translateAlternateColorCodes('&', line);
+								sender.sendMessage(prefix + line);
+							}
+							if(main.getServer().getOfflinePlayer(args[1]).isOnline())
+							{
+								for(String line : messagesFile.getStringList("timed-effect-received"))
+								{
+									line = line.replace("{giver}", sender.getName());
+									line = line.replace("{effect}", args[2]);
+									line = line.replace("{time}", args[3]);
+									line = ChatColor.translateAlternateColorCodes('&', line);
+									sender.sendMessage(prefix + line);
+								}
+							}
+						}
+						else
+						{
+							for(String line : messagesFile.getStringList("errors.non-existing-effect"))
+							{
+								line = line.replace("{effect}", args[2]);
+								line = ChatColor.translateAlternateColorCodes('&', line);
+								sender.sendMessage(prefix + line);
+							}
+						}
+					}
+					else
+					{
+						for(String line : messagesFile.getStringList("errors.not-enough-permissions"))
+						{
+							line = ChatColor.translateAlternateColorCodes('&', line);
+							sender.sendMessage(prefix + line);
+						}
+					}
 				}
 			}
 			else
