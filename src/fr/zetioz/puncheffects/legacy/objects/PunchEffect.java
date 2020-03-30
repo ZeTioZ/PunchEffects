@@ -1,4 +1,4 @@
-package fr.zetioz.puncheffects.legacy;
+package fr.zetioz.puncheffects.legacy.objects;
 
 import org.bukkit.inventory.ItemStack;
 

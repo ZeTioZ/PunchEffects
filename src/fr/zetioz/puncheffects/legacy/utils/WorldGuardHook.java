@@ -1,4 +1,4 @@
-package fr.zetioz.puncheffects.legacy;
+package fr.zetioz.puncheffects.legacy.utils;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;

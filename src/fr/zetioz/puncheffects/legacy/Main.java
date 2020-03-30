@@ -5,11 +5,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import fr.zetioz.puncheffects.legacy.utils.FilesManager;
+
 public class Main extends JavaPlugin implements Listener
 {
 	private Plugin plugin;
 	private FilesManager filesManager;
 	private PunchEffectsDamage ped;
+	private PunchEffectsCommand pec;
 	private boolean worldGuardEnabled;
 	
 	@Override
@@ -30,11 +33,14 @@ public class Main extends JavaPlugin implements Listener
 		{
 			getLogger().info("WorldGuard is missing some functions will not be available!");
 		}
-		this.ped = new PunchEffectsDamage(this);
+		ped = new PunchEffectsDamage(this);
+		pec = new PunchEffectsCommand(this);
 		registerEvents(this, ped);
-		getCommand("puncheffects").setExecutor(new PunchEffectsCommand(this));
+		getCommand("puncheffects").setExecutor(pec);
 		
 		ped.setEffectsMap(filesManager.configsLoader());
+		ped.setPlayersTempsEffect(filesManager.loadDatabase());
+		pec.setPlayersTempsEffect(filesManager.loadDatabase());
 	}
 	
 	@Override
@@ -64,6 +70,11 @@ public class Main extends JavaPlugin implements Listener
 	public PunchEffectsDamage getPED()
 	{
 		return this.ped;
+	}
+	
+	public PunchEffectsCommand getPEC()
+	{
+		return this.pec;
 	}
 	
 	public boolean getWorldGuardEnabled()

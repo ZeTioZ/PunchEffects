@@ -21,6 +21,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import fr.zetioz.puncheffects.legacy.objects.PunchEffect;
+import fr.zetioz.puncheffects.legacy.utils.WorldGuardHook;
+
 public class PunchEffectsDamage implements Listener{
 
 	private Main main;
@@ -29,6 +32,7 @@ public class PunchEffectsDamage implements Listener{
 	private Map<UUID, Map<String, Long>> cooldownMap;
 	private Random rand = new SecureRandom();
 	private YamlConfiguration configsFile;
+	private Map<String, Map<String, Long>> playersTempsEffect;
 	
 	public PunchEffectsDamage(Main main)
 	{
@@ -37,6 +41,17 @@ public class PunchEffectsDamage implements Listener{
 		this.cooldownMap = new HashMap<>();
 		this.wgh = this.main.getWorldGuardEnabled() ? new WorldGuardHook() : null;
 		this.configsFile = main.getFilesManager().getConfigsFile();
+		this.playersTempsEffect = new HashMap<>();
+	}
+	
+	public Map<String, Map<String, Long>> getPlayersTempsEffect()
+	{
+		return this.playersTempsEffect;
+	}
+	
+	public void setPlayersTempsEffect(Map<String, Map<String, Long>> playersTempsEffect)
+	{
+		this.playersTempsEffect = playersTempsEffect;
 	}
 	
 	public void setEffectsMap(Map<String, PunchEffect> effectsMap)
@@ -49,7 +64,6 @@ public class PunchEffectsDamage implements Listener{
 		return this.effectsMap;
 	}
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerPunch(EntityDamageByEntityEvent e)
 	{
@@ -63,7 +77,23 @@ public class PunchEffectsDamage implements Listener{
 			LivingEntity victim = (LivingEntity) e.getEntity();
 			for(Entry<String, PunchEffect> permissionEffect :  effectsMap.entrySet())
 			{
-				if(damager.hasPermission(permissionEffect.getValue().getEffectPermission()) || !permissionEffect.getValue().getUsePermission())
+				if(playersTempsEffect.containsKey(damager.getUniqueId().toString())
+						&& playersTempsEffect.get(damager.getUniqueId().toString()).containsKey(permissionEffect.getKey())
+						&& playersTempsEffect.get(damager.getUniqueId().toString()).get(permissionEffect.getKey()) <= System.currentTimeMillis())
+				{
+					playersTempsEffect.get(damager.getUniqueId().toString()).remove(permissionEffect.getKey());
+					if(playersTempsEffect.get(damager.getUniqueId().toString()).isEmpty())
+					{
+						playersTempsEffect.remove(damager.getUniqueId().toString());
+					}
+					main.getPEC().setPlayersTempsEffect(playersTempsEffect);
+					main.getFilesManager().saveDatabase();
+				}
+				if(damager.hasPermission(permissionEffect.getValue().getEffectPermission())
+						|| !permissionEffect.getValue().getUsePermission()
+						|| (playersTempsEffect.containsKey(damager.getUniqueId().toString())
+								&& playersTempsEffect.get(damager.getUniqueId().toString()).containsKey(permissionEffect.getKey())
+								&& playersTempsEffect.get(damager.getUniqueId().toString()).get(permissionEffect.getKey()) > System.currentTimeMillis()))
 				{
 					PunchEffect pe = permissionEffect.getValue();
 					String itemType = configsFile.getString("punch_effects." + permissionEffect.getKey() + ".holding_item.material");
@@ -71,8 +101,8 @@ public class PunchEffectsDamage implements Listener{
 					List<String> itemLore = pe.getHoldingItem().getType() != Material.AIR && pe.getHoldingItem().getItemMeta().getLore() != null ? pe.getHoldingItem().getItemMeta().getLore() : itemType.equalsIgnoreCase("PROJECTILE") ? configsFile.getStringList("punch_effects." + permissionEffect.getKey() + ".holding_item.lore") : new ArrayList<>();
 					boolean onlyArrow = configsFile.getBoolean("punch_effects." + permissionEffect.getKey() + ".holding_item.only_arrow");
 					
-					String damagerItemName = damager.getItemInHand().getType() != Material.AIR && damager.getItemInHand().getItemMeta().getDisplayName() != null ? damager.getItemInHand().getItemMeta().getDisplayName() : "none";
-					List<String> damagerItemLore = damager.getItemInHand().getType() != Material.AIR && damager.getItemInHand().getItemMeta().getLore() != null ? damager.getItemInHand().getItemMeta().getLore() : new ArrayList<>();
+					String damagerItemName = damager.getInventory().getItemInHand().getType() != Material.AIR && damager.getInventory().getItemInHand().getItemMeta().getDisplayName() != null ? damager.getInventory().getItemInHand().getItemMeta().getDisplayName() : "none";
+					List<String> damagerItemLore = damager.getInventory().getItemInHand().getType() != Material.AIR && damager.getInventory().getItemInHand().getItemMeta().getLore() != null ? damager.getInventory().getItemInHand().getItemMeta().getLore() : new ArrayList<>();
 					
 					// WorldGuard Check
 					if(((wgh != null
@@ -83,13 +113,13 @@ public class PunchEffectsDamage implements Listener{
 						// Item check
 						// Set item check
 						&& ((pe.getHoldingItem().getType() != Material.AIR
-							&& pe.getHoldingItem().getType() == damager.getItemInHand().getType()
+							&& pe.getHoldingItem().getType() == damager.getInventory().getItemInHand().getType()
 							&& itemName.equals(damagerItemName)
 							&& itemLore.equals(damagerItemLore))
 						// No item only hand check
 						|| (pe.getHoldingItem().getType() == Material.AIR
 							&& itemType.equalsIgnoreCase("HAND")
-							&& damager.getItemInHand().getType() == Material.AIR)
+							&& damager.getInventory().getItemInHand().getType() == Material.AIR)
 						// Any item
 						|| (pe.getHoldingItem().getType() == Material.AIR
 							&& !itemType.equalsIgnoreCase("HAND")

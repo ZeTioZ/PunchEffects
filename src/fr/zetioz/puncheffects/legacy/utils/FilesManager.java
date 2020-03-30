@@ -1,19 +1,25 @@
-package fr.zetioz.puncheffects.legacy;
+package fr.zetioz.puncheffects.legacy.utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+
+import fr.zetioz.puncheffects.legacy.Main;
+import fr.zetioz.puncheffects.legacy.objects.PunchEffect;
 
 public class FilesManager
 {
@@ -52,6 +58,7 @@ public class FilesManager
         catch (IOException | InvalidConfigurationException e)
         {
         	plugin.getLogger().severe("An error occured while loading the configs file!");
+        	e.printStackTrace();
         }
     }
     
@@ -117,9 +124,124 @@ public class FilesManager
 	    {
 			messagesFileConfig.load(messagesFile);
 	    }
-	    catch (IOException | InvalidConfigurationException e) {
+	    catch (IOException | InvalidConfigurationException e)
+		{
 	    	plugin.getLogger().severe("An error occured while loading the messages file!");
+	    	e.printStackTrace();
 	    }
+	}
+	//endregion
+	
+	//region Database File (Creator/Getter)
+    private YamlConfiguration databaseFileConfig;
+    private File databaseFile;
+
+    public YamlConfiguration getDatabaseFile()
+    {
+        return this.databaseFileConfig;
+    }
+    
+	public void createDatabaseFiles()
+	{
+		databaseFile = new File(plugin.getDataFolder(), "database.yml");
+		if(!databaseFile.exists())
+		{
+			try {
+				databaseFile.createNewFile();
+			} catch (IOException e) {
+				plugin.getLogger().severe("An error occured while creating the database file!");
+				plugin.getLogger().severe(Arrays.toString(e.getStackTrace()));
+			}
+		}
+		
+		databaseFileConfig = new YamlConfiguration();
+		try
+	    {
+			databaseFileConfig.load(databaseFile);
+	    }
+	    catch (IOException | InvalidConfigurationException e) {
+	    	plugin.getLogger().severe("An error occured while loading the database file!");
+	    	e.printStackTrace();
+	    }
+	}
+	
+	public Map<String, Map<String, Long>> loadDatabase()
+	{
+		if(databaseFileConfig != null)
+		{
+			if(databaseFileConfig.isConfigurationSection("players_temp_effects"))
+			{
+				Map<String, Map<String, Long>> playersTempEffects = new HashMap<>();
+				ConfigurationSection databaseConfigSection = databaseFileConfig.getConfigurationSection("players_temp_effects");
+				for(String UUID : databaseConfigSection.getKeys(false))
+				{
+					ConfigurationSection playerSection = databaseConfigSection.getConfigurationSection(UUID);
+					for(String effectName : playerSection.getKeys(false))
+					{						
+						Long endTimeTempEffect = playerSection.getLong(effectName);
+						if(!playersTempEffects.containsKey(UUID))
+						{
+							playersTempEffects.put(UUID, new HashMap<>());
+						}
+						playersTempEffects.get(UUID).put(effectName, endTimeTempEffect);
+					}
+				}
+				plugin.getLogger().info("Database loaded successfully!");
+				return playersTempEffects;
+			}
+			return new HashMap<>();
+		}
+		createDatabaseFiles();
+		return loadDatabase();
+	}
+	
+	public void saveDatabase()
+	{
+		if(databaseFileConfig != null)
+		{		
+			Map<String, Map<String, Long>> playersTempEffects = main.getPEC().getPlayersTempsEffect();
+			if(!databaseFileConfig.isConfigurationSection("players_temp_effects"))
+			{
+				databaseFileConfig.createSection("players_temp_effects");
+			}
+			ConfigurationSection databaseConfigSection = databaseFileConfig.getConfigurationSection("players_temp_effects");
+			for(String playerUUID : databaseConfigSection.getKeys(false))
+			{
+				if(!playersTempEffects.containsKey(playerUUID))
+				{
+					databaseFileConfig.set("players_temp_effects." + playerUUID, null);
+				}
+			}
+			for(Entry<String, Map<String, Long>> playerTempEffects : playersTempEffects.entrySet())
+			{
+				if(databaseFileConfig.isConfigurationSection("players_temp_effects." + playerTempEffects.getKey()))
+				{					
+					ConfigurationSection playerSection = databaseConfigSection.getConfigurationSection(playerTempEffects.getKey());
+					for(String effectName : playerSection.getKeys(false))
+					{
+						if(!playerTempEffects.getValue().containsKey(effectName))
+						{
+							databaseFileConfig.set("players_temp_effects." + playerTempEffects.getKey() + "." + effectName, null);
+						}
+					}
+				}
+				for(Entry<String, Long> TempEffect : playerTempEffects.getValue().entrySet())
+				{
+					databaseFileConfig.set("players_temp_effects." + playerTempEffects.getKey() + "." + TempEffect.getKey(), TempEffect.getValue());
+				}
+			}
+			try {
+				databaseFileConfig.save(databaseFile);
+			} catch (IOException e) {
+				plugin.getLogger().severe("An error occured while saving the database file!");
+				e.printStackTrace();
+			}
+		}
+		else
+		{
+			createDatabaseFiles();
+			saveDatabase();
+		}
 	}
 	//endregion
 }
