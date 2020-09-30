@@ -21,6 +21,10 @@ timed-effect-received:
 timed-effect-revoked:
   - "&2You revoked the &d{effect} &2effect from &b{player}!"
 
+effects-list-header: "&2Available PunchEffects:"
+
+effects-list-color: "&a"
+
 errors:
   unknown-effect:
     - "&cThe effect &d{effect} &cdoesn't exists in the configs!"

@@ -133,7 +133,6 @@ public class PunchEffectsDamage implements Listener{
 							// Only Arrow check
 							&& ((onlyArrow && e.getDamager().getType() == EntityType.ARROW)
 								|| !onlyArrow))
-							//&& e.getDamager() instanceof Projectile)
 						// Trigger Chances check
 						&& rand.nextInt(100) < pe.getTriggerChances()
 						// Cooldown check
@@ -227,7 +226,7 @@ public class PunchEffectsDamage implements Listener{
 						{
 							cooldownMap.get(damager.getUniqueId()).remove(permissionEffect.getKey());
 							String effectType = pe.getEffectType();
-							main.getLogger().severe("§cThe punch potion effect §d\"{wrongEffect}\" §cdoens't exist!\nPlease remove it from the configs file and reload the plugin!".replace("{wrongEffect}", effectType));
+							main.getLogger().severe("ï¿½cThe punch potion effect ï¿½d\"{wrongEffect}\" ï¿½cdoens't exist!\nPlease remove it from the configs file and reload the plugin!".replace("{wrongEffect}", effectType));
 						}
 					}
 				}
