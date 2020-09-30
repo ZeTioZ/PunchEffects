@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.zetioz.puncheffects.utils.TimeConverter;
+import fr.zetioz.puncheffects.utils.Color;
 import fr.zetioz.puncheffects.objects.PunchEffect;
 
 
@@ -33,7 +33,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 		this.main = main;
 		this.messagesFile = this.main.getFilesManager().getMessagesFile();
 		this.configsFile = this.main.getFilesManager().getConfigsFile();
-		this.prefix = ChatColor.translateAlternateColorCodes('&', messagesFile.getString("prefix"));
+		this.prefix = Color.color(messagesFile.getString("prefix"));
 		this.playersTempsEffect = new HashMap<>();
 	}
 	
@@ -62,8 +62,17 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 				{
 					for(String line : messagesFile.getStringList("errors.no-item-input"))
 					{
-						line = ChatColor.translateAlternateColorCodes('&', line);
+						line = Color.color(line);
 						sender.sendMessage(prefix + line);
+					}
+				}
+				else if(args[0].equalsIgnoreCase("list"))
+				{
+					sender.sendMessage(prefix + Color.color(messagesFile.getString("effects-list-header")));
+					
+					for(String effectName : main.getPED().getEffectsMap().keySet())
+					{
+						sender.sendMessage(Color.color(messagesFile.getString("effects-list-color") + effectName));
 					}
 				}
 				else if(args[0].equalsIgnoreCase("help"))
@@ -78,7 +87,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 						Bukkit.getPluginManager().enablePlugin(main);
 						for(String line : messagesFile.getStringList("plugin-reload"))
 						{
-							line = ChatColor.translateAlternateColorCodes('&', line);
+							line = Color.color(line);
 							sender.sendMessage(prefix + line);
 						}
 					}
@@ -86,7 +95,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 					{
 						for(String line : messagesFile.getStringList("errors.not-enough-permissions"))
 						{
-							line = ChatColor.translateAlternateColorCodes('&', line);
+							line = Color.color(line);
 							sender.sendMessage(prefix + line);
 						}
 					}
@@ -127,7 +136,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 									for(String line : messagesFile.getStringList("weapon-given"))
 									{
 										line = line.replace("{effect}", args[1]);
-										line = ChatColor.translateAlternateColorCodes('&', line);
+										line = Color.color(line);
 										sender.sendMessage(prefix + line);
 									}
 									
@@ -136,7 +145,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 								{
 									for(String line : messagesFile.getStringList("errors.no-item-give"))
 									{
-										line = ChatColor.translateAlternateColorCodes('&', line);
+										line = Color.color(line);
 										sender.sendMessage(prefix + line);
 									}
 								}
@@ -146,7 +155,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 								for(String line : messagesFile.getStringList("errors.unknown-effect"))
 								{
 									line = line.replace("{effect}", args[1]);
-									line = ChatColor.translateAlternateColorCodes('&', line);
+									line = Color.color(line);
 									sender.sendMessage(prefix + line);
 								}
 							}
@@ -155,7 +164,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 						{
 							for(String line : messagesFile.getStringList("errors.not-enough-permissions"))
 							{
-								line = ChatColor.translateAlternateColorCodes('&', line);
+								line = Color.color(line);
 								sender.sendMessage(prefix + line);
 							}
 						}
@@ -164,7 +173,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 					{
 						for(String line : messagesFile.getStringList("errors.must-be-player"))
 						{
-							line = ChatColor.translateAlternateColorCodes('&', line);
+							line = Color.color(line);
 							sender.sendMessage(prefix + line);
 						}
 					}
@@ -197,7 +206,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 								{
 									line = line.replace("{player}", args[1]);
 									line = line.replace("{effect}", args[2]);
-									line = ChatColor.translateAlternateColorCodes('&', line);
+									line = Color.color(line);
 									sender.sendMessage(prefix + line);
 								}
 							}
@@ -207,7 +216,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 								{
 									line = line.replace("{player}", args[1]);
 									line = line.replace("{effect}", effectName);
-									line = ChatColor.translateAlternateColorCodes('&', line);
+									line = Color.color(line);
 									sender.sendMessage(prefix + line);
 								}
 							}
@@ -217,7 +226,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 							for(String line : messagesFile.getStringList("errors.player-empty-effects-list"))
 							{
 								line = line.replace("{player}", args[1]);
-								line = ChatColor.translateAlternateColorCodes('&', line);
+								line = Color.color(line);
 								sender.sendMessage(prefix + line);
 							}
 						}
@@ -226,7 +235,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 					{
 						for(String line : messagesFile.getStringList("errors.not-enough-permissions"))
 						{
-							line = ChatColor.translateAlternateColorCodes('&', line);
+							line = Color.color(line);
 							sender.sendMessage(prefix + line);
 						}
 					}
@@ -255,7 +264,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 								line = line.replace("{receiver}", args[1]);
 								line = line.replace("{effect}", args[2]);
 								line = line.replace("{time}", args[3]);
-								line = ChatColor.translateAlternateColorCodes('&', line);
+								line = Color.color(line);
 								sender.sendMessage(prefix + line);
 							}
 							if(main.getServer().getOfflinePlayer(args[1]).isOnline())
@@ -265,7 +274,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 									line = line.replace("{giver}", sender.getName());
 									line = line.replace("{effect}", args[2]);
 									line = line.replace("{time}", args[3]);
-									line = ChatColor.translateAlternateColorCodes('&', line);
+									line = Color.color(line);
 									sender.sendMessage(prefix + line);
 								}
 							}
@@ -275,7 +284,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 							for(String line : messagesFile.getStringList("errors.non-existing-effect"))
 							{
 								line = line.replace("{effect}", args[2]);
-								line = ChatColor.translateAlternateColorCodes('&', line);
+								line = Color.color(line);
 								sender.sendMessage(prefix + line);
 							}
 						}
@@ -284,7 +293,7 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 					{
 						for(String line : messagesFile.getStringList("errors.not-enough-permissions"))
 						{
-							line = ChatColor.translateAlternateColorCodes('&', line);
+							line = Color.color(line);
 							sender.sendMessage(prefix + line);
 						}
 					}
@@ -295,14 +304,14 @@ public class PunchEffectsCommand implements CommandExecutor, Listener
 				sendHelpPage(sender);
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	public void sendHelpPage(CommandSender player)
 	{
 		for(String line : messagesFile.getStringList("help-page"))
 		{
-			line = ChatColor.translateAlternateColorCodes('&', line);
+			line = Color.color(line);
 			player.sendMessage(prefix + line);
 		}
 	}

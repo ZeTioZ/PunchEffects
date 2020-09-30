@@ -1,8 +1,8 @@
 name: PunchEffects
-version: 0.8.0
+version: 0.9.0
 author: ZeTioZ
 main: fr.zetioz.puncheffects.Main
-website: https://opsycraft.fr/
+website: https://reyna.tk/
 softdepend: [WorldGuard]
 commands:
   puncheffects:
