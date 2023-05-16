@@ -1,0 +1,43 @@
+prefix: "&c[&aPunch&6Effects&c] &r"
+
+reload-command:
+  - "&2Plugin reloaded!"
+  
+help-page:
+  - "&d/puncheffects &c» &2Display this help page"
+  - "&d/puncheffects gi <effect> &c» &2Give the custom effect item"
+  - "&d/puncheffects gte <player> <effect> <time> &c» &2Give an effect to a player for a give time"
+  - "&d/puncheffects rte <player> <effect> &c» &2Remove a given effect from a player"
+  - "&d/puncheffects help &c» &2Display this help page"
+  - "&d/puncheffects reload &c» &2Reload the plugin"
+  
+weapon-given:
+  - "&2You got the weapon related to the &d{effect} &2effect!"
+
+timed-effect-given:
+  - "&2You gave the &d{effect} &2effect to &b{receiver} &2for &d{time}&2!"
+timed-effect-received:
+  - "&2You received the &d{effect} &2effect from &b{giver} &2for &d{time}&2!"
+timed-effect-revoked:
+  - "&2You revoked the &d{effect} &2effect from &b{player}!"
+
+effects-list-header: "&2Available PunchEffectsMain:"
+effects-list-item: "&a{effect}"
+
+errors:
+  unknown-effect:
+    - "&cThe effect &d{effect} &cdoesn't exists in the configs!"
+  no-item-give:
+    - "&cThere is no item to give with the typed effect name!"
+  no-item-input:
+    - "&cPlease, input an effect to get the custom item from it!"
+  not-enough-permissions:
+    - "&cSorry, but you don't have enough permissions to do that!"
+  must-be-player:
+    - "&cYou must a player to execute this command!"
+  non-existing-effect:
+    - "&cThe effect &d{effect} &cdoesn't seems to exists!"
+  player-empty-effects-list:
+    - "&b{player} &chas no timed effect!"
+  effect-not-listed:
+    - "&cThe effect &d{effect} &cis not owned by &b{player}&c!"

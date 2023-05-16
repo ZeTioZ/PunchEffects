@@ -1,0 +1,62 @@
+# Here is an example of how you set up a new effect per permission
+# You can find all the available effects on the plugin page under the spoiler "Available Effects"
+# You can find all the available item material here https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html (1.15.2 for other version please refer to the proper documentation!)
+# Simply add the name of the material under the column "Enum Constant" in the documentation
+#=---------------------------------=#
+# punch_effects:                    #
+#   effectname1:                    #
+#     use_permission: true          #
+#     permission: permission1       #
+#     effect: "SMITE"               #
+#     holding_item:                 #
+#       material: "ANY"             #
+#       only_arrow: false           #
+#       display_name: "NONE"        #
+#       lore:                       #
+#         - "A LORE LINE 1"         #
+#         - "A LORE LINE 2"         #
+#     mob_effect: true              #
+#     damager_effect: true          #
+#     victim_effect: true           #
+#     worldguard_check: true        #
+#     duration: 99999 (seconds)     #
+#     level: 3                      #
+#     cooldown: 15 (seconds)        #
+#     trigger_chances: 100 (%)      #
+#=---------------------------------=#
+
+punch_effects:
+  smite:
+    use_permission: true
+    permission: peffects.smite
+    effect: "SMITE"
+    holding_item:
+      material: "DIAMOND_SWORD"
+      # "only_arrow" option Will only be read if the material is set to "PROJECTILE"
+      only_arrow: false
+      display_name: "Smite Sword"
+      lore: []
+    mob_effect: true
+    damager_effect: true
+    victim_effect: true
+    worldguard_check: true
+    duration: 5
+    level: 1
+    cooldown: 15
+    trigger_chances: 100
+  heal:
+    use_permission: true
+    permission: peffects.heal
+    effect: "REGENERATION"
+    holding_item:
+      material: "DIAMOND_SWORD"
+      display_name: "Heal Sword"
+      lore: []
+    mob_effect: true
+    damager_effect: true
+    victim_effect: true
+    worldguard_check: true
+    duration: 60
+    level: 1
+    cooldown: 15
+    trigger_chances: 100
